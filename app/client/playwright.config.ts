@@ -27,7 +27,7 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: `node start-test-server.js`,
+      command: `node start-test-server.cjs`,
       url: `http://localhost:${flaskPort}/api/dogs`,
       reuseExistingServer: false,
       timeout: 30_000,

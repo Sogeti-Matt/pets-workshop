@@ -49,3 +49,6 @@ app/server/e2e_test_dogshelter.db
 
 # azure
 .azure
+
+# BMAD personal overrides (never committed; the rest of _bmad/ is shared class scaffolding)
+_bmad/custom/config.user.toml

@@ -33,7 +33,7 @@ def get_dogs() -> Response:
     # Filter by adoption status when one is supplied. An unknown value is
     # ignored rather than rejected, so the UI never has to handle a 400.
     if status and status != 'ALL' and status in AdoptionStatus.__members__:
-        query.filter(Dog.status == AdoptionStatus[status])
+        query = query.filter(Dog.status == AdoptionStatus[status])
 
     # Count AFTER filtering so pagination reflects the filtered set.
     total = query.count()

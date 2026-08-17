@@ -3,7 +3,14 @@ interface Dog {
   id: number;
   name: string;
   breed: string;
+  status: string;
 }
+
+const STATUS_STYLES: Record<string, string> = {
+  AVAILABLE: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+  ADOPTED: 'bg-slate-500/15 text-slate-300 border-slate-500/30',
+  PENDING: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
+};
 
 interface Props {
   dogs: Dog[];
@@ -32,6 +39,12 @@ const { dogs } = Astro.props;
             <div class="relative z-10">
               <h3 class="text-xl font-semibold text-slate-100 mb-2 group-hover:text-blue-400 transition-colors" data-testid="dog-name">{dog.name}</h3>
               <p class="text-slate-400 mb-4" data-testid="dog-breed">{dog.breed}</p>
+              <span
+                class={`inline-block text-xs font-medium px-2.5 py-1 rounded-full border ${STATUS_STYLES[dog.status] ?? 'bg-slate-500/15 text-slate-300 border-slate-500/30'}`}
+                data-testid="dog-status"
+              >
+                {dog.status}
+              </span>
               <div class="mt-4 text-sm text-blue-400 font-medium flex items-center">
                 <span>View details</span>
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 transform transition-transform duration-300 group-hover:translate-x-2" viewBox="0 0 20 20" fill="currentColor">

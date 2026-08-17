@@ -12,8 +12,16 @@ let error: string | null = null;
 
 const currentPage = Math.max(1, Number(Astro.url.searchParams.get('page')) || 1);
 
+const STATUS_OPTIONS = ['ALL', 'AVAILABLE', 'ADOPTED', 'PENDING'];
+const requestedStatus = Astro.url.searchParams.get('status') ?? 'ALL';
+const currentStatus = STATUS_OPTIONS.includes(requestedStatus) ? requestedStatus : 'ALL';
+
+// Carry the active status through pagination links.
+const pageHref = (targetPage: number) =>
+  currentStatus === 'ALL' ? `/?page=${targetPage}` : `/?page=${targetPage}&status=${currentStatus}`;
+
 try {
-  const response = await fetch(`${API_SERVER_URL}/api/dogs?page=${currentPage}&per_page=${PAGE_SIZE}`);
+  const response = await fetch(`${API_SERVER_URL}/api/dogs?page=${currentPage}&per_page=${PAGE_SIZE}&status=${currentStatus}`);
   if (response.ok) {
     const data = await response.json();
     dogs = data.dogs;
@@ -40,13 +48,36 @@ try {
       </div>
     ) : (
       <>
+        <form method="get" class="mb-8 flex items-center gap-3" data-testid="status-filter-form">
+          <label for="status" class="text-slate-300 text-sm font-medium">Adoption status</label>
+          <select
+            id="status"
+            name="status"
+            class="bg-slate-800 border border-slate-700 text-slate-200 rounded-lg px-3 py-2 text-sm focus:border-blue-500/60 focus:outline-none"
+            data-testid="status-filter"
+          >
+            {STATUS_OPTIONS.map((option) => (
+              <option value={option} selected={option === currentStatus}>
+                {option === 'ALL' ? 'All' : option.charAt(0) + option.slice(1).toLowerCase()}
+              </option>
+            ))}
+          </select>
+          <button
+            type="submit"
+            class="px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 text-sm hover:border-blue-500/50 hover:text-blue-400 transition-colors"
+            data-testid="status-filter-apply"
+          >
+            Apply
+          </button>
+        </form>
+
         <DogList dogs={dogs} />
 
         {totalPages > 1 && (
           <nav class="flex justify-center items-center gap-2 mt-10" data-testid="pagination">
             {page > 1 ? (
               <a
-                href={`/?page=${page - 1}`}
+                href={pageHref(page - 1)}
                 class="px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:border-blue-500/50 hover:text-blue-400 transition-colors"
                 data-testid="pagination-prev"
               >
@@ -64,7 +95,7 @@ try {
 
             {page < totalPages ? (
               <a
-                href={`/?page=${page + 1}`}
+                href={pageHref(page + 1)}
                 class="px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:border-blue-500/50 hover:text-blue-400 transition-colors"
                 data-testid="pagination-next"
               >
